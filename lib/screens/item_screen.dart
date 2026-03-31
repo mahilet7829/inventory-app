@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import '../models/store_item.dart';
 import '../models/brand.dart';
-import 'brand_detail_screen.dart';
 import 'create_brand_screen.dart';
+import 'brand_detail_screen.dart';
 
 class ItemScreen extends StatefulWidget {
   final StoreItem storeItem;
@@ -20,14 +20,14 @@ class _ItemScreenState extends State<ItemScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(widget.storeItem.name)),
       body: widget.storeItem.brands.isEmpty
-          ? Center(
+          ? const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.inventory_2_outlined, size: 80, color: Colors.grey[700]),
-                  const SizedBox(height: 20),
-                  const Text('No brands added yet', style: TextStyle(fontSize: 20)),
-                  const Text('Tap + to add brands', style: TextStyle(color: Colors.grey)),
+                  Icon(Icons.inventory_2_outlined, size: 80, color: Colors.grey),
+                  SizedBox(height: 20),
+                  Text('No brands added yet', style: TextStyle(fontSize: 20)),
+                  Text('Tap + to add brands for this item', style: TextStyle(color: Colors.grey)),
                 ],
               ),
             )
@@ -44,19 +44,28 @@ class _ItemScreenState extends State<ItemScreen> {
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Price: Br ${brand.price.toStringAsFixed(2)}'),
-                        Text('Stock: ${brand.stock}', style: TextStyle(color: brand.stock > 0 ? Colors.green : Colors.red)),
+                        Text('Price: ብር ${brand.price.toStringAsFixed(0)}'),
+                        Text(
+                          'Stock: ${brand.stock}',
+                          style: TextStyle(
+                            color: brand.stock > 0 ? Colors.greenAccent : Colors.redAccent,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ],
                     ),
                     trailing: Text(
-                      'Br ${brand.value.toStringAsFixed(2)}',
+                      'ብር ${brand.value.toStringAsFixed(0)}',
                       style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => BrandDetailScreen(brand: brand, storeItem: widget.storeItem),
+                          builder: (_) => BrandDetailScreen(
+                            brand: brand,
+                            storeItem: widget.storeItem,
+                          ),
                         ),
                       ).then((_) => setState(() {}));
                     },
@@ -76,7 +85,6 @@ class _ItemScreenState extends State<ItemScreen> {
             setState(() {
               widget.storeItem.brands.add(newBrand);
             });
-            // Save will be handled in HomeScreen when returning
           }
         },
         child: const Icon(Icons.add),

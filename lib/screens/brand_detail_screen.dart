@@ -15,7 +15,7 @@ class BrandDetailScreen extends StatefulWidget {
 }
 
 class _BrandDetailScreenState extends State<BrandDetailScreen> {
-  final DateFormat dateFormat = DateFormat('dd MMM yyyy HH:mm');
+  final DateFormat dateFormat = DateFormat('dd MMM yyyy  HH:mm');
 
   @override
   Widget build(BuildContext context) {
@@ -25,30 +25,34 @@ class _BrandDetailScreenState extends State<BrandDetailScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            // Main Info Card
             Card(
               child: Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(24),
                 child: Column(
                   children: [
-                    Text(widget.brand.name, 
-                        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 10),
-                    Text('Br ${widget.brand.price.toStringAsFixed(0)}', 
-                        style: const TextStyle(fontSize: 32, color: Color(0xFF00D4FF), fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 20),
+                    Text(widget.brand.name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 12),
+                    Text(
+                      'ብር ${widget.brand.price.toStringAsFixed(0)}',
+                      style: const TextStyle(fontSize: 32, color: Color(0xFF00D4FF), fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 24),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Column(children: [
-                          const Text('Stock'),
-                          Text('${widget.brand.stock}', 
-                              style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold)),
-                        ]),
-                        Column(children: [
-                          const Text('Total Value'),
-                          Text('Br ${widget.brand.value.toStringAsFixed(0)}', 
-                              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w600)),
-                        ]),
+                        Column(
+                          children: [
+                            const Text('Current Stock'),
+                            Text('${widget.brand.stock}', style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            const Text('Total Value'),
+                            Text('ብር ${widget.brand.value.toStringAsFixed(0)}', style: const TextStyle(fontSize: 24)),
+                          ],
+                        ),
                       ],
                     ),
                   ],
@@ -56,13 +60,19 @@ class _BrandDetailScreenState extends State<BrandDetailScreen> {
               ),
             ),
 
-            const SizedBox(height: 25),
+            const SizedBox(height: 20),
 
             // Restock & Sold Buttons
             Row(
               children: [
                 Expanded(
                   child: ElevatedButton.icon(
+                    icon: const Icon(Icons.add_circle_outline),
+                    label: const Text('Restock (+1)'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
                     onPressed: () {
                       setState(() {
                         widget.brand.stock++;
@@ -73,33 +83,29 @@ class _BrandDetailScreenState extends State<BrandDetailScreen> {
                         ));
                       });
                     },
-                    icon: const Icon(Icons.add_circle),
-                    label: const Text('Restock (+1)'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      padding: const EdgeInsets.symmetric(vertical: 18),
-                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton.icon(
-                    onPressed: widget.brand.stock > 0 ? () {
-                      setState(() {
-                        widget.brand.stock--;
-                        widget.brand.history.insert(0, Transaction(
-                          timestamp: DateTime.now(),
-                          type: 'sold',
-                          quantity: -1,
-                        ));
-                      });
-                    } : null,
-                    icon: const Icon(Icons.remove_circle),
+                    icon: const Icon(Icons.remove_circle_outline),
                     label: const Text('Sold (-1)'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
-                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
+                    onPressed: widget.brand.stock > 0
+                        ? () {
+                            setState(() {
+                              widget.brand.stock--;
+                              widget.brand.history.insert(0, Transaction(
+                                timestamp: DateTime.now(),
+                                type: 'sold',
+                                quantity: -1,
+                              ));
+                            });
+                          }
+                        : null,
                   ),
                 ),
               ],
@@ -107,10 +113,9 @@ class _BrandDetailScreenState extends State<BrandDetailScreen> {
 
             const SizedBox(height: 30),
 
-            const Text('Transaction History', 
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            // History Section
+            const Text('Transaction History', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
-
             Expanded(
               child: widget.brand.history.isEmpty
                   ? const Center(child: Text('No transactions yet'))
@@ -123,19 +128,14 @@ class _BrandDetailScreenState extends State<BrandDetailScreen> {
                           leading: Icon(
                             isRestock ? Icons.add_circle : Icons.remove_circle,
                             color: isRestock ? Colors.green : Colors.red,
-                            size: 30,
                           ),
-                          title: Text(isRestock ? 'Restocked +1' : 'Sold -1',
-                              style: const TextStyle(fontSize: 16)),
+                          title: Text(isRestock ? 'Restocked +1' : 'Sold -1'),
                           subtitle: Text(dateFormat.format(t.timestamp)),
                           trailing: Text(
                             isRestock 
-                                ? '+ Br ${widget.brand.price.toStringAsFixed(0)}' 
-                                : '- Br ${widget.brand.price.toStringAsFixed(0)}',
-                            style: TextStyle(
-                              color: isRestock ? Colors.green : Colors.red,
-                              fontWeight: FontWeight.bold,
-                            ),
+                                ? '+ ብር ${widget.brand.price.toStringAsFixed(0)}' 
+                                : '- ብር ${widget.brand.price.toStringAsFixed(0)}',
+                            style: TextStyle(color: isRestock ? Colors.green : Colors.red),
                           ),
                         );
                       },

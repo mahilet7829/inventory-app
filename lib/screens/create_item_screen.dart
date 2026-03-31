@@ -32,21 +32,16 @@ class _CreateItemScreenState extends State<CreateItemScreen> {
               TextFormField(
                 controller: _nameController,
                 decoration: const InputDecoration(
-                  labelText: 'Item Name (e.g. Fridge, Oven, Mixer)',
+                  labelText: 'Item Name (e.g. Fridge, Oven, Blender)',
                   border: OutlineInputBorder(),
                   filled: true,
                 ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Please enter item name';
-                  }
-                  return null;
-                },
+                validator: (value) => value!.trim().isEmpty ? 'Item name is required' : null,
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 40),
               SizedBox(
                 width: double.infinity,
-                height: 55,
+                height: 56,
                 child: ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
