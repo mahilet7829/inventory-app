@@ -18,7 +18,54 @@ class _BrandDetailScreenState extends State<BrandDetailScreen> {
   final DateFormat dateFormat = DateFormat('dd MMM yyyy  HH:mm');
 
   @override
+  void initState() {
+    super.initState();
+    // Show warning immediately if stock is already 0 when opening the screen
+    if (widget.brand.stock == 0) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showOutOfStockNotification();
+      });
+    }
+  }
+
+  // Show notification when stock is 0
+  void _showOutOfStockNotification() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.warning_amber_rounded, color: Colors.white),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'You are out of ${widget.brand.name}, please restock',
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.red.shade700,
+        duration: const Duration(seconds: 4),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        action: SnackBarAction(
+          label: 'OK',
+          textColor: Colors.white,
+          onPressed: () {},
+        ),
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // Show notification automatically when stock becomes 0
+    if (widget.brand.stock == 0) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showOutOfStockNotification();
+      });
+    }
+
     return Scaffold(
       appBar: AppBar(title: Text(widget.brand.name)),
       body: Padding(
@@ -31,7 +78,8 @@ class _BrandDetailScreenState extends State<BrandDetailScreen> {
                 padding: const EdgeInsets.all(24),
                 child: Column(
                   children: [
-                    Text(widget.brand.name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                    Text(widget.brand.name, 
+                        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 12),
                     Text(
                       'ብር ${widget.brand.price.toStringAsFixed(0)}',
@@ -44,13 +92,21 @@ class _BrandDetailScreenState extends State<BrandDetailScreen> {
                         Column(
                           children: [
                             const Text('Current Stock'),
-                            Text('${widget.brand.stock}', style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold)),
+                            Text(
+                              '${widget.brand.stock}',
+                              style: TextStyle(
+                                fontSize: 36,
+                                fontWeight: FontWeight.bold,
+                                color: widget.brand.stock == 0 ? Colors.red : Colors.white,
+                              ),
+                            ),
                           ],
                         ),
                         Column(
                           children: [
                             const Text('Total Value'),
-                            Text('ብር ${widget.brand.value.toStringAsFixed(0)}', style: const TextStyle(fontSize: 24)),
+                            Text('ብር ${widget.brand.value.toStringAsFixed(0)}', 
+                                style: const TextStyle(fontSize: 24)),
                           ],
                         ),
                       ],
@@ -60,7 +116,7 @@ class _BrandDetailScreenState extends State<BrandDetailScreen> {
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 25),
 
             // Restock & Sold Buttons
             Row(
@@ -94,18 +150,20 @@ class _BrandDetailScreenState extends State<BrandDetailScreen> {
                       backgroundColor: Colors.red,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
-                    onPressed: widget.brand.stock > 0
-                        ? () {
-                            setState(() {
-                              widget.brand.stock--;
-                              widget.brand.history.insert(0, Transaction(
-                                timestamp: DateTime.now(),
-                                type: 'sold',
-                                quantity: -1,
-                              ));
-                            });
-                          }
-                        : null,
+                    onPressed: () {
+                      if (widget.brand.stock <= 0) {
+                        _showOutOfStockNotification();
+                        return;
+                      }
+                      setState(() {
+                        widget.brand.stock--;
+                        widget.brand.history.insert(0, Transaction(
+                          timestamp: DateTime.now(),
+                          type: 'sold',
+                          quantity: -1,
+                        ));
+                      });
+                    },
                   ),
                 ),
               ],
@@ -113,7 +171,7 @@ class _BrandDetailScreenState extends State<BrandDetailScreen> {
 
             const SizedBox(height: 30),
 
-            // History Section
+            // History
             const Text('Transaction History', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
             Expanded(
