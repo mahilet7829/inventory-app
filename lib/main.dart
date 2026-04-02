@@ -32,10 +32,11 @@ class SoliyanaStoreApp extends StatelessWidget {
           background: const Color(0xFF0A0A0A),
         ),
         scaffoldBackgroundColor: const Color(0xFF0A0A0A),
-        cardTheme: const CardTheme(
+        cardTheme: CardThemeData(
           color: Color(0xFF1E1E1E),
           elevation: 8,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder
+          (borderRadius: BorderRadius.circular(20)),
         ),
         appBarTheme: AppBarTheme(
           backgroundColor: const Color(0xFF0A0A0A),
