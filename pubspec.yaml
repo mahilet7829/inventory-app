@@ -1,5 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
-name: kitchen_inventory_app
+name:kitchen_inventory_app
 description: A kitchen inventory management app
 publish_to: 'none'
 version: 1.0.0+1
