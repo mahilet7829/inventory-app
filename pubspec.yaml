@@ -1,8 +1,21 @@
+import 'package:shared_preferences/shared_preferences.dart';
 name: kitchen_inventory_app
 description: A kitchen inventory management app
 publish_to: 'none'
 version: 1.0.0+1
+SharedPreferences? prefs;
 
+@override
+void initState() {
+  super.initState();
+  initPrefs();
+}
+
+void initPrefs() async {
+  prefs = await SharedPreferences.getInstance();
+  await prefs?.setString('store_items', jsonEncode(jsonList));
+}
+final String? data = prefs?.getString('store_items');
 environment:
   sdk: '>=3.0.0 <4.0.0'
 
